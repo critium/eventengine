@@ -1,16 +1,19 @@
+// external libraries
 var _ = require("underscore");
 
 
-
-var tickLength = 'annual';
-var tickInvocation = 'endOfPeriod';
-var leaseEvents = {
+// 'constants'
+// TODO: move these into the Lease obl device class
+const tickLength = 'annual';
+const tickInvocation = 'endOfPeriod';
+const leaseEvents = {
   board   : "obligation.board",
   update  : "obligation.update",
   payment : "obligation.payment",
   tick    : "obligation.tick"
 };
 
+// externalize this into a separate class
 var FinMath = {
   npv:function(rate, amount, term){
     var val = 0;
@@ -24,8 +27,11 @@ var FinMath = {
   }
 };
 
-
-// code for how the devlice will handle itself
+/*
+ * Class LeaseObligationDevice
+ * event handlers for lease oblibation events
+ * code for how the devlice will handle itself
+ */
 var LeaseObligationDevice = function(){
   this.events = [];
 };
