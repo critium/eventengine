@@ -1,12 +1,15 @@
+//using strict breaks the const.
+"use strict";
+
 // external libraries
 var _ = require("underscore");
 
 
 // 'constants'
 // TODO: move these into the Lease obl device class
-const tickLength = 'annual';
-const tickInvocation = 'endOfPeriod';
-const leaseEvents = {
+var tickLength = 'annual';
+var tickInvocation = 'endOfPeriod';
+var leaseEvents = {
   board   : "obligation.board",
   update  : "obligation.update",
   payment : "obligation.payment",
@@ -233,7 +236,7 @@ LeaseObligationDeviceProcessor.prototype = {
   },
   process:function(events){
     // sort by the date
-    // UPDATE: This is probably useless
+    // UPDATE: This is probably useless since its sorted again later
     events = _.sortBy(events, function(event){
       // console.log(myDate, "rimw: " + myDate.getTime());
       return stringToDate(event.eventEffDt);
