@@ -1,0 +1,164 @@
+<!doctype html>
+<html><head>
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script src="http://cdn.sockjs.org/sockjs-0.3.min.js"></script>
+<style>
+.box {
+  width: 300px;
+  float: left;
+  margin: 0 20px 0 20px;
+}
+.box div, .box input {
+  border: 1px solid;
+  -moz-border-radius: 4px;
+  border-radius: 4px;
+  width: 100%;
+  padding: 0px;
+  margin: 5px;
+}
+.box div {
+  border-color: grey;
+  height: 300px;
+  overflow: auto;
+}
+.box input {
+  height: 30px;
+}
+h1 {
+  margin-left: 30px;
+}
+body {
+  background-color: #F0F0F0;
+  font-family: "Arial";
+}
+td, th {
+  padding: 2px 4px;
+}
+
+th {
+  font-weight: bold;
+}
+</style>
+</head><body lang="en">
+<h1>SockJS Echo example</h1>
+
+<div id="first" class="box">
+  <div></div>
+  <form><input autocomplete="off" value="Type here..."></input></form>
+</div>
+
+<div id="container"></div>
+<script type="text/javascript" src="http://mbostock.github.com/d3/d3.min.js"></script>
+<script>
+// sockjs start
+var sockjs_url = '/echo';
+var sockjs = new SockJS(sockjs_url);
+$('#first input').focus();
+
+var div  = $('#first div');
+var inp  = $('#first input');
+var form = $('#first form');
+
+var print = function(m, p) {
+  p = (p === undefined) ? '' : JSON.stringify(p);
+  div.append($("<code>").text(m + ' ' + p));
+  div.append($("<br>"));
+  div.scrollTop(div.scrollTop()+10000);
+};
+
+sockjs.onopen    = function()  {print('[*] open', sockjs.protocol);};
+sockjs.onmessage = function(e) {
+  if(e.data.indexOf('JSON'===0)){
+    updateTable(e.data);
+  } else {
+    print('[.] message', e.data);
+  }
+};
+sockjs.onclose   = function()  {print('[*] close');};
+
+form.submit(function() {
+  print('[ ] sending', inp.val());
+  sockjs.send(inp.val());
+  inp.val('');
+  return false;
+});
+
+var updateTable = function (jsonstring){
+  var jsononly = jsonstring.substring(4,jsonstring.length);
+  debugger;
+  var myJson = JSON.parse(jsononly);
+  tab2(myJson);
+}
+
+
+//////////////
+// d3 table //
+//////////////
+var tab2 = function(root){
+  var leases = root.datasource.leases;
+  for(var i=0; i<leases.length; i++){
+    var id = leases[i].id;
+    var div = d3.select('#container').append("div");
+    div.text(id);
+  }
+}
+
+
+var tablulate = function (data, columns) {
+  var table = d3.select("#container").append("table"),
+  thead = table.append("thead"),
+  tbody = table.append("tbody");
+
+  // append the header row
+  thead.append("tr")
+  .selectAll("th")
+  .data(columns)
+  .enter()
+  .append("th")
+  .text(function(column) { return column; });
+
+  // create a row for each object in the data
+  var rows = tbody.selectAll("tr")
+  .data(data)
+  .enter()
+  .append("tr");
+
+  // create a cell in each row for each column
+  var cells = rows.selectAll("td")
+  .data(function(row) {
+    return columns.map(function(column) {
+      return {column: column, value: row[column]};
+    });
+  })
+  .enter()
+  .append("td")
+  .text(function(d) { return d.value; });
+
+  return table;
+}
+
+// create some people
+// var people = [
+//   {name: "Jill", age: 30},
+//   {name: "Bob", age: 32},
+//   {name: "George", age: 29},
+//   {name: "Sally", age: 31}
+// ];
+//
+// // render the table
+// var peopleTable = tabulate(people, ["name", "age"]);
+//
+// // uppercase the column headers
+// peopleTable.selectAll("thead th")
+// .text(function(column) {
+//   return column.charAt(0).toUpperCase() + column.substr(1);
+// });
+//
+// // sort by age
+// peopleTable.selectAll("tbody tr")
+// .sort(function(a, b) {
+//   return d3.descending(a.age, b.age);
+// });
+</script>
+</body>
+</html>
