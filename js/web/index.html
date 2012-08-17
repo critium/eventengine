@@ -48,6 +48,7 @@ th {
 </div>
 
 <div id="container"></div>
+<div id="container2"></div>
 <script type="text/javascript" src="http://mbostock.github.com/d3/d3.min.js"></script>
 <script>
 // sockjs start
@@ -87,7 +88,10 @@ var updateTable = function (jsonstring){
   var jsononly = jsonstring.substring(4,jsonstring.length);
   debugger;
   var myJson = JSON.parse(jsononly);
-  tab2(myJson);
+  if(myJson.datasource)
+    tab2(myJson);
+  else
+    tab3(myJson);
 }
 
 
@@ -103,6 +107,16 @@ var tab2 = function(root){
   }
 }
 
+var tab3 = function(root){
+  var curr = root.result.current;
+  for(var i=0; i<curr.length; i++){
+    var id  =
+      curr[i].amort + '&nbsp;' +
+      curr[i].period + '&nbsp;';
+    var div = d3.select('#container2').append("div");
+    div.text(id);
+  }
+}
 
 var tablulate = function (data, columns) {
   var table = d3.select("#container").append("table"),

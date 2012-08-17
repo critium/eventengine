@@ -1,7 +1,9 @@
-var http = require('http');
-var sockjs = require('sockjs');
+var http        = require('http');
+var sockjs      = require('sockjs');
 var node_static = require('node-static');
-var testEvents = require('../engine/test/example1and2.js');
+var testEvents  = require('../setup/example1and2.js');
+var testRes     = require('../setup/LeaseObjRes.js');
+
 
 // 1. Echo sockjs server
 var sockjs_opts = {sockjs_url: "http://cdn.sockjs.org/sockjs-0.3.min.js"};
@@ -9,6 +11,7 @@ var sockjs_opts = {sockjs_url: "http://cdn.sockjs.org/sockjs-0.3.min.js"};
 var sockjs_echo = sockjs.createServer(sockjs_opts);
 sockjs_echo.on('connection', function(conn) {
   conn.write('JSON'+JSON.stringify(testEvents));
+  conn.write('JSON'+JSON.stringify(testRes));
   conn.on('data', function(message) {
     conn.write(message);
   });
@@ -30,3 +33,8 @@ sockjs_echo.installHandlers(server, {prefix:'/echo'});
 
 console.log(' [*] Listening on 0.0.0.0:9999' );
 server.listen(9999, '0.0.0.0');
+
+
+
+//TODO:
+//return the event renderer and result renderer
